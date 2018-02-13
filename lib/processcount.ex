@@ -14,23 +14,23 @@ defmodule Processcount do
   """
   def counter(pid) do
     receive do
-      n -> 
+      n ->
         send pid, n + 1
         Processcount.counter(pid)
-    end    
+    end
   end
 
   def create_processes(n) do
     last = Enum.reduce 1..n, self(), fn(_, send_to) -> spawn(Processcount, :counter, [send_to]) end
     send last, 0
-    
+
     receive do
       n when is_integer(n) ->
         IO.puts "Result is #{n}"
-      o -> 
+      o ->
         IO.puts("received something else #{o}")
     end
-    
+
   end
 
   def run(n) do
@@ -39,7 +39,7 @@ defmodule Processcount do
 
   def mirror_msg(pid) do
     receive do
-       msg -> 
+       msg ->
         send pid, msg
     end
   end
@@ -55,7 +55,7 @@ defmodule Processcount do
   end
 
   def ex2() do
-    Enum.each 1..100, fn(n) -> 
+    Enum.each 1..100, fn(n) ->
       pid = spawn(Processcount, :mirror_msg, [self()])
       send pid, "sending #{n}"
     end
